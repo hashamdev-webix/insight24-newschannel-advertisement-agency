@@ -102,36 +102,29 @@ export default function AdvertisePage() {
               {
                 title: 'Highly Engaged Audience',
                 desc: 'Our readers spend an average of 4+ minutes per visit, actively consuming news and information — ideal for brand recall.',
-                icon: '👁',
               },
               {
                 title: 'Targeted Reach',
                 desc: 'Place ads alongside relevant content — Business, Technology, World, Entertainment — ensuring your message reaches the right readers.',
-                icon: '🎯',
               },
               {
                 title: 'Professional Placements',
                 desc: 'Premium ad positions on a credible news platform lend authority and trust to your brand through association.',
-                icon: '✅',
               },
               {
                 title: 'Flexible Packages',
                 desc: 'Whether you are a local business or a global brand, we have ad packages to suit every budget and objective.',
-                icon: '📦',
               },
               {
                 title: 'Performance Reporting',
                 desc: 'Receive detailed weekly reports on impressions, clicks and engagement so you always know your return on investment.',
-                icon: '📊',
               },
               {
                 title: 'Sponsored Content',
                 desc: 'Publish branded articles written in our editorial style to educate your audience and build thought leadership.',
-                icon: '✍️',
               },
             ].map((item) => (
               <div key={item.title} className="border border-gray-200 p-6 hover:border-[#dd0000] transition">
-                <div className="text-3xl mb-3">{item.icon}</div>
                 <h3 className="font-bold text-[#1a1a1a] mb-2 text-sm uppercase tracking-wide">{item.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
               </div>
