@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -31,13 +32,14 @@ export default function Footer() {
 
           {/* Brand column */}
           <div>
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="bg-[#dd0000] px-2 py-1 flex items-center justify-center">
-                <span className="text-white font-black text-lg tracking-widest leading-none">INSIGHT</span>
-              </div>
-              <div className="bg-white px-2 py-1 flex items-center justify-center">
-                <span className="text-[#1a1a1a] font-black text-lg tracking-widest leading-none">24</span>
-              </div>
+            <Link href="/" className="flex items-center mb-4">
+              <Image
+                src="/logo.png"
+                alt="Insight 24"
+                width={200}
+                height={70}
+                className="h-16 w-auto object-contain"
+              />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed">
               Your trusted source for breaking news, in-depth reporting, and professional advertising opportunities.
@@ -124,13 +126,14 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-gray-700 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#dd0000] px-1.5 py-0.5">
-              <span className="text-white font-black text-xs tracking-widest">INSIGHT</span>
-            </div>
-            <div className="bg-white px-1.5 py-0.5">
-              <span className="text-[#1a1a1a] font-black text-xs tracking-widest">24</span>
-            </div>
+          <div className="flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Insight 24"
+              width={110}
+              height={36}
+              className="h-9 w-auto object-contain"
+            />
           </div>
           <p className="text-gray-500 text-xs text-center">
             © {new Date().getFullYear()} Insight 24 – NewsChannel Advertisement Agency. All rights reserved.

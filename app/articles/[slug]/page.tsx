@@ -3,8 +3,10 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AdBanner from '@/components/AdBanner';
-import { articles, getArticleBySlug, getArticlesByCategory, getTrendingArticles } from '@/lib/data';
+import { getArticleBySlug, getArticlesByCategory, getTrendingArticles, getAllSlugs } from '@/lib/fetch-data';
 import { formatDate } from '@/lib/utils';
+
+export const revalidate = 60;
 
 interface ArticlePageProps {
   params: Promise<{
@@ -13,14 +15,13 @@ interface ArticlePageProps {
 }
 
 export async function generateStaticParams() {
-  return articles.map((article) => ({
-    slug: article.slug,
-  }));
+  const slugs = await getAllSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug);
 
   if (!article) {
     return {
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: ArticlePageProps) {
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug);
 
   if (!article) {
     return (
@@ -57,10 +58,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     );
   }
 
-  const relatedArticles = getArticlesByCategory(article.category)
-    .filter((a) => a.id !== article.id)
-    .slice(0, 3);
-  const trendingArticles = getTrendingArticles(5);
+  const [relatedArticlesRaw, trendingArticles] = await Promise.all([
+    getArticlesByCategory(article.category, 4),
+    getTrendingArticles(5),
+  ]);
+  const relatedArticles = relatedArticlesRaw.filter((a) => a.id !== article.id).slice(0, 3);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -75,7 +77,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <Link href="/" className="hover:text-[#dd0000] transition font-semibold">Home</Link>
               <span>/</span>
               <Link href={`/category/${article.category}`} className="hover:text-[#dd0000] transition font-semibold capitalize">
-                {article.category}
+                {article.categoryName || article.category}
               </Link>
               <span>/</span>
               <span className="text-[#1a1a1a] truncate font-semibold">{article.title}</span>
@@ -96,9 +98,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   href={`/category/${article.category}`}
                   className="bg-[#dd0000] text-white text-xs font-black px-3 py-1 uppercase tracking-widest hover:bg-red-700 transition"
                 >
-                  {article.category}
+                  {article.categoryName || article.category}
                 </Link>
-                <span className="text-xs text-gray-400">{formatDate(article.date)}</span>
+                <span className="text-xs text-gray-400">{formatDate(article.publishedAt)}</span>
               </div>
 
               {/* Title */}
@@ -119,7 +121,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-[#1a1a1a]">By {article.author}</p>
-                    <p className="text-xs text-gray-400">Published {formatDate(article.date)}</p>
+                    <p className="text-xs text-gray-400">Published {formatDate(article.publishedAt)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -163,7 +165,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                     <span>𝕏</span> Twitter
                   </button>
                   <button className="flex items-center gap-2 bg-gray-200 text-[#1a1a1a] text-xs font-bold px-4 py-2 hover:bg-gray-300 transition">
-                    📋 Copy Link
+                    Copy Link
                   </button>
                 </div>
               </div>
@@ -197,7 +199,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                     <Link key={t.id} href={`/articles/${t.slug}`} className="group flex gap-3 p-3 hover:bg-gray-50 transition">
                       <span className="text-lg font-black text-[#dd0000] w-5 shrink-0">{i + 1}</span>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold text-[#dd0000] uppercase tracking-wider mb-0.5">{t.category}</p>
+                        <p className="text-[10px] font-bold text-[#dd0000] uppercase tracking-wider mb-0.5">{t.categoryName || t.category}</p>
                         <h4 className="text-xs font-semibold text-[#1a1a1a] leading-tight line-clamp-3 group-hover:text-[#dd0000] transition">
                           {t.title}
                         </h4>
@@ -229,7 +231,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <div className="max-w-7xl mx-auto px-4">
               <div className="flex items-center justify-between border-b-4 border-[#dd0000] pb-2 mb-6">
                 <h2 className="text-base font-black text-[#1a1a1a] uppercase tracking-widest">
-                  More from {article.category}
+                  More from {article.categoryName || article.category}
                 </h2>
                 <Link href={`/category/${article.category}`} className="text-xs text-[#dd0000] hover:underline font-semibold">
                   View all
@@ -242,7 +244,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                       <Image src={related.image} alt={related.title} fill className="object-cover group-hover:scale-105 transition" />
                     </div>
                     <div className="p-4">
-                      <p className="text-[10px] font-bold text-[#dd0000] uppercase tracking-wider mb-1">{related.category}</p>
+                      <p className="text-[10px] font-bold text-[#dd0000] uppercase tracking-wider mb-1">{related.categoryName || related.category}</p>
                       <h3 className="text-sm font-bold text-[#1a1a1a] leading-tight line-clamp-3 group-hover:text-[#dd0000] transition">
                         {related.title}
                       </h3>

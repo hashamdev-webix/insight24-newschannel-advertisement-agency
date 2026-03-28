@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 const navItems = [
@@ -33,13 +34,15 @@ export default function Header() {
       <div className="bg-[#1a1a1a]">
         <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="bg-[#dd0000] px-3 py-1.5 flex items-center justify-center">
-              <span className="text-white font-black text-xl tracking-widest leading-none">INSIGHT</span>
-            </div>
-            <div className="bg-white px-2 py-1.5 flex items-center justify-center">
-              <span className="text-[#1a1a1a] font-black text-xl tracking-widest leading-none">24</span>
-            </div>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Insight 24"
+              width={200}
+              height={160}
+              className="h-16 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Right: search + sign in */}

@@ -3,9 +3,10 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AdBanner from '@/components/AdBanner';
-import { getArticlesByCategory, getTrendingArticles } from '@/lib/data';
-import { Category } from '@/lib/types';
+import { getArticlesByCategory, getTrendingArticles, getAllSlugs } from '@/lib/fetch-data';
 import { formatDate } from '@/lib/utils';
+
+export const revalidate = 60;
 
 const categoryLabels: Record<string, string> = {
   world: 'World News',
@@ -41,8 +42,10 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
-  const categoryArticles = getArticlesByCategory(category);
-  const trendingArticles = getTrendingArticles(5);
+  const [categoryArticles, trendingArticles] = await Promise.all([
+    getArticlesByCategory(category, 20),
+    getTrendingArticles(5),
+  ]);
   const label = categoryLabels[category] || category;
 
   return (
@@ -89,7 +92,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         {categoryArticles[0].title}
                       </h2>
                       <p className="text-sm text-gray-600 line-clamp-2 mb-2">{categoryArticles[0].excerpt}</p>
-                      <p className="text-xs text-gray-400">{formatDate(categoryArticles[0].date)}</p>
+                      <p className="text-xs text-gray-400">{formatDate(categoryArticles[0].publishedAt)}</p>
                     </div>
                   </Link>
 
@@ -110,7 +113,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                             {article.title}
                           </h3>
                           <p className="text-xs text-gray-500 line-clamp-1">{article.excerpt}</p>
-                          <p className="text-xs text-gray-400 mt-1">{formatDate(article.date)}</p>
+                          <p className="text-xs text-gray-400 mt-1">{formatDate(article.publishedAt)}</p>
                         </div>
                       </Link>
                     ))}
@@ -137,7 +140,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                       <span className="text-lg font-black text-[#dd0000] w-5 shrink-0">{i + 1}</span>
                       <div className="min-w-0">
                         <p className="text-[10px] font-bold text-[#dd0000] uppercase tracking-wider mb-0.5">
-                          {article.category}
+                          {article.categoryName || article.category}
                         </p>
                         <h4 className="text-xs font-semibold text-[#1a1a1a] leading-tight line-clamp-3 group-hover:text-[#dd0000] transition">
                           {article.title}
