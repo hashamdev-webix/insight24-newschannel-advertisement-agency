@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
@@ -49,6 +52,30 @@ const stats = [
 ];
 
 export default function AdvertisePage() {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', packageType: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    const res = await fetch('/api/ad-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (!res.ok) { setError(data.error || 'Failed to submit'); return; }
+    setSuccess(true);
+    setForm({ name: '', email: '', phone: '', packageType: '', message: '' });
+  }
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
@@ -190,61 +217,58 @@ export default function AdvertisePage() {
               Fill in the form below and our advertising team will respond within 24 hours.
             </p>
           </div>
-          <form className="space-y-5 border border-gray-200 p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Name *</label>
-                <input
-                  type="text"
-                  placeholder="Your full name"
-                  className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Email *</label>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition"
-                />
-              </div>
+          {success ? (
+            <div className="border border-green-200 bg-green-50 p-8 text-center">
+              <p className="text-green-700 font-black text-sm uppercase tracking-widest mb-1">Request Submitted!</p>
+              <p className="text-green-600 text-xs">Our advertising team will contact you within 24 hours.</p>
+              <button onClick={() => setSuccess(false)} className="mt-4 text-xs text-[#dd0000] hover:underline font-semibold">Submit another request</button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Phone</label>
-                <input
-                  type="tel"
-                  placeholder="+1 (000) 000-0000"
-                  className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition"
-                />
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5 border border-gray-200 p-8">
+              {error && <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2">{error}</div>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Name *</label>
+                  <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Your full name" required
+                    className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Email *</label>
+                  <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="your@email.com" required
+                    className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Phone</label>
+                  <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="+1 (000) 000-0000"
+                    className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Ad Package *</label>
+                  <select name="packageType" value={form.packageType} onChange={handleChange} required
+                    className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition bg-white">
+                    <option value="">Select a package</option>
+                    <option>Leaderboard Banner — $299/week</option>
+                    <option>Sidebar Rectangle — $199/week</option>
+                    <option>Sponsored Article — $499/article</option>
+                    <option>Homepage Featured Ad — $399/week</option>
+                    <option>Custom Package</option>
+                  </select>
+                </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Ad Package</label>
-                <select className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition bg-white">
-                  <option value="">Select a package</option>
-                  <option>Leaderboard Banner — $299/week</option>
-                  <option>Sidebar Rectangle — $199/week</option>
-                  <option>Sponsored Article — $499/article</option>
-                  <option>Homepage Featured Ad — $399/week</option>
-                  <option>Custom Package</option>
-                </select>
+                <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Message *</label>
+                <textarea rows={4} name="message" value={form.message} onChange={handleChange}
+                  placeholder="Tell us about your advertising goals, target audience, and any specific requirements..." required
+                  className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition resize-none" />
               </div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-[#1a1a1a] uppercase tracking-widest mb-1.5">Message</label>
-              <textarea
-                rows={4}
-                placeholder="Tell us about your advertising goals, target audience, and any specific requirements..."
-                className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-[#dd0000] transition resize-none"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-[#dd0000] text-white font-black text-sm py-4 hover:bg-red-700 transition uppercase tracking-widest"
-            >
-              Request Advertisement
-            </button>
-          </form>
+              <button type="submit" disabled={loading}
+                className="w-full bg-[#dd0000] text-white font-black text-sm py-4 hover:bg-red-700 transition uppercase tracking-widest disabled:opacity-60">
+                {loading ? 'Submitting...' : 'Request Advertisement'}
+              </button>
+            </form>
+          )}
         </section>
 
       </main>
