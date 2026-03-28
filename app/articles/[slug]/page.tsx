@@ -7,6 +7,7 @@ import { getArticleBySlug, getArticlesByCategory, getTrendingArticles, getAllSlu
 import { formatDate } from '@/lib/utils';
 
 export const revalidate = 60;
+export const dynamicParams = true;
 
 interface ArticlePageProps {
   params: Promise<{
@@ -15,30 +16,42 @@ interface ArticlePageProps {
 }
 
 export async function generateStaticParams() {
-  const slugs = await getAllSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await getAllSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
-
-  if (!article) {
+  try {
+    const article = await getArticleBySlug(slug);
+    if (!article) {
+      return {
+        title: 'Article Not Found – Insight 24',
+        description: 'The article you are looking for could not be found.',
+      };
+    }
     return {
-      title: 'Article Not Found – Insight 24',
-      description: 'The article you are looking for could not be found.',
+      title: `${article.title} – Insight 24`,
+      description: article.excerpt,
     };
+  } catch {
+    return { title: 'Insight 24' };
   }
-
-  return {
-    title: `${article.title} – Insight 24`,
-    description: article.excerpt,
-  };
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+
+  let article: Awaited<ReturnType<typeof getArticleBySlug>> = null;
+  try {
+    article = await getArticleBySlug(slug);
+  } catch {
+    // DB unavailable
+  }
 
   if (!article) {
     return (
@@ -58,11 +71,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     );
   }
 
-  const [relatedArticlesRaw, trendingArticles] = await Promise.all([
-    getArticlesByCategory(article.category, 4),
-    getTrendingArticles(5),
-  ]);
-  const relatedArticles = relatedArticlesRaw.filter((a) => a.id !== article.id).slice(0, 3);
+  let relatedArticles: Awaited<ReturnType<typeof getArticlesByCategory>> = [];
+  let trendingArticles: Awaited<ReturnType<typeof getTrendingArticles>> = [];
+  try {
+    const [relatedRaw, trending] = await Promise.all([
+      getArticlesByCategory(article.category, 4),
+      getTrendingArticles(5),
+    ]);
+    relatedArticles = relatedRaw.filter((a) => a.id !== article.id).slice(0, 3);
+    trendingArticles = trending;
+  } catch {
+    // DB unavailable
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-white">

@@ -7,6 +7,7 @@ import { getArticlesByCategory, getTrendingArticles, getAllSlugs } from '@/lib/f
 import { formatDate } from '@/lib/utils';
 
 export const revalidate = 60;
+export const dynamicParams = true;
 
 const categoryLabels: Record<string, string> = {
   world: 'World News',
@@ -42,10 +43,16 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
-  const [categoryArticles, trendingArticles] = await Promise.all([
-    getArticlesByCategory(category, 20),
-    getTrendingArticles(5),
-  ]);
+  let categoryArticles: Awaited<ReturnType<typeof getArticlesByCategory>> = [];
+  let trendingArticles: Awaited<ReturnType<typeof getTrendingArticles>> = [];
+  try {
+    [categoryArticles, trendingArticles] = await Promise.all([
+      getArticlesByCategory(category, 20),
+      getTrendingArticles(5),
+    ]);
+  } catch {
+    // DB unavailable — render empty state
+  }
   const label = categoryLabels[category] || category;
 
   return (
