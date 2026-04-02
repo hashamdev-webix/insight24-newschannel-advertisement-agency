@@ -3,21 +3,28 @@ import { connectDB } from '@/lib/mongodb';
 import Advertisement from '@/models/Advertisement';
 import { getTokenFromRequest } from '@/lib/auth';
 
-// GET /api/ads?placement=sidebar  — public, returns active ads
+// GET /api/ads?placement=sidebar
+// — Admin (authenticated): all ads, no date/status filter
+// — Public: active ads within date range only
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const placement = new URL(req.url).searchParams.get('placement');
-    const now = new Date();
+    const { searchParams } = new URL(req.url);
+    const placement = searchParams.get('placement');
+    const isAdmin = !!getTokenFromRequest(req);
 
-    const query: Record<string, unknown> = {
-      isActive: true,
-      startDate: { $lte: now },
-      endDate: { $gte: now },
-    };
+    const query: Record<string, unknown> = {};
+
+    if (!isAdmin) {
+      const now = new Date();
+      query.isActive = true;
+      query.startDate = { $lte: now };
+      query.endDate = { $gte: now };
+    }
+
     if (placement) query.placement = placement;
 
-    const ads = await Advertisement.find(query).lean();
+    const ads = await Advertisement.find(query).sort({ createdAt: -1 }).lean();
     return NextResponse.json({ ads });
   } catch {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
