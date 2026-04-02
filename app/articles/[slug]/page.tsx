@@ -196,7 +196,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </div>
 
               {/* Inline Ad between image and content */}
-              <AdBanner size="inline" />
+              <AdBanner placement="inline" />
 
               {/* Article body */}
               <div className="mt-6 space-y-5">
@@ -232,25 +232,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {/* Sidebar */}
             <aside className="lg:col-span-1 space-y-6">
               {/* Sidebar Ad */}
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest text-center mb-1">
-                  Advertisement
-                </p>
-                <div className="bg-gradient-to-b from-gray-100 to-gray-200 border border-dashed border-gray-300 flex flex-col items-center justify-center gap-3 h-64 cursor-pointer hover:from-gray-200 hover:to-gray-300 transition group">
-                  <div className="w-10 h-10 bg-[#dd0000] flex items-center justify-center rounded-sm">
-                    <span className="text-white text-sm font-black">AD</span>
-                  </div>
-                  <p className="text-sm font-bold text-gray-600 group-hover:text-[#dd0000] transition text-center px-4">
-                    Sidebar Ad
-                  </p>
-                  <Link
-                    href="/advertise"
-                    className="text-xs text-[#dd0000] hover:underline font-semibold"
-                  >
-                    Advertise with us
-                  </Link>
-                </div>
-              </div>
+              <AdBanner placement="sidebar" />
 
               {/* Trending */}
               <div>
@@ -283,19 +265,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </div>
 
               {/* Second sidebar ad */}
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest text-center mb-1">
-                  Advertisement
-                </p>
-                <div className="bg-gradient-to-b from-gray-100 to-gray-200 border border-dashed border-gray-300 flex flex-col items-center justify-center gap-3 h-48 cursor-pointer hover:from-gray-200 hover:to-gray-300 transition group">
-                  <div className="w-10 h-10 bg-[#1a1a1a] flex items-center justify-center rounded-sm">
-                    <span className="text-white text-sm font-black">AD</span>
-                  </div>
-                  <p className="text-xs font-bold text-gray-600 group-hover:text-[#dd0000] transition text-center px-4">
-                    300×250
-                  </p>
-                </div>
-              </div>
+              <AdBanner placement="sidebar" />
             </aside>
           </div>
         </div>

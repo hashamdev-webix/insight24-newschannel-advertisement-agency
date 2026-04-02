@@ -76,12 +76,20 @@ export default function AdminAdsPage() {
                   </button>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    onClick={() => handleDelete(ad._id)}
-                    className="text-xs text-[#dd0000] hover:underline font-semibold"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex items-center justify-end gap-3">
+                    <Link
+                      href={`/admin/ads/edit/${ad._id}`}
+                      className="text-xs font-semibold text-[#1a1a1a] hover:text-[#dd0000] transition"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(ad._id)}
+                      className="text-xs text-[#dd0000] hover:underline font-semibold"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

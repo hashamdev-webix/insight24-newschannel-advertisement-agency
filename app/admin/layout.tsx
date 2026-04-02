@@ -12,6 +12,7 @@ const navLinks = [
   { href: '/admin/ads', label: 'Advertisements', icon: '📢' },
   { href: '/admin/ad-requests', label: 'Ad Requests', icon: '📩' },
   { href: '/admin/messages', label: 'Messages', icon: '✉️' },
+  { href: '/admin/users', label: 'Users', icon: '👤' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

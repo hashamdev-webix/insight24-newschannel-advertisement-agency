@@ -56,7 +56,7 @@ export default async function Home() {
 
       {/* Top Leaderboard Ad */}
       <div className="max-w-7xl mx-auto px-4 pt-3 w-full">
-        <AdBanner size="leaderboard" />
+        <AdBanner placement="top-banner" />
       </div>
 
       <main className="flex-1">
@@ -143,7 +143,7 @@ export default async function Home() {
 
         {/* ── INLINE AD ── */}
         <div className="max-w-7xl mx-auto px-4 mb-8">
-          <AdBanner size="inline" />
+          <AdBanner placement="inline" />
         </div>
 
         {/* ── BUSINESS + SIDEBAR AD ── */}
@@ -172,14 +172,7 @@ export default async function Home() {
               </div>
               {/* Sidebar Ad */}
               <div className="lg:col-span-1">
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest text-center mb-1">Advertisement</p>
-                <div className="bg-gradient-to-b from-gray-100 to-gray-200 border border-dashed border-gray-300 flex flex-col items-center justify-center gap-3 h-64 cursor-pointer hover:from-gray-200 hover:to-gray-300 transition group">
-                  <div className="w-10 h-10 bg-[#dd0000] flex items-center justify-center rounded-sm">
-                    <span className="text-white text-sm font-black">AD</span>
-                  </div>
-                  <p className="text-sm font-bold text-gray-600 group-hover:text-[#dd0000] transition text-center px-4">Sidebar Ad</p>
-                  <p className="text-xs text-gray-400 text-center px-4">300×250</p>
-                </div>
+                <AdBanner placement="sidebar" />
               </div>
             </div>
           </section>
@@ -211,7 +204,7 @@ export default async function Home() {
 
         {/* ── INLINE AD #2 ── */}
         <div className="max-w-7xl mx-auto px-4 my-8">
-          <AdBanner size="inline" />
+          <AdBanner placement="inline" />
         </div>
 
         {/* ── TECHNOLOGY ── */}
@@ -265,16 +258,9 @@ export default async function Home() {
                 </div>
               )}
             </div>
-            {/* Sidebar Half Page Ad */}
+            {/* Sidebar Ad */}
             <div className="lg:col-span-1">
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest text-center mb-1">Advertisement</p>
-              <div className="bg-gradient-to-b from-gray-100 to-gray-200 border border-dashed border-gray-300 flex flex-col items-center justify-center gap-3 h-72 cursor-pointer hover:from-gray-200 hover:to-gray-300 transition group">
-                <div className="w-10 h-10 bg-[#dd0000] flex items-center justify-center rounded-sm">
-                  <span className="text-white text-sm font-black">AD</span>
-                </div>
-                <p className="text-sm font-bold text-gray-600 group-hover:text-[#dd0000] transition text-center px-4">Sidebar Ad</p>
-                <p className="text-xs text-gray-400 text-center px-4">300×600</p>
-              </div>
+              <AdBanner placement="sidebar" />
             </div>
           </div>
         </section>

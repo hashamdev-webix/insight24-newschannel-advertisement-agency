@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function NewArticlePage() {
   return <ArticleForm mode="new" />;
@@ -21,7 +22,7 @@ export function ArticleForm({ mode, initialData, slug }: { mode: 'new' | 'edit';
     category: initialData?.category || '',
     categoryName: initialData?.categoryName || '',
     author: initialData?.author || '',
-    image: initialData?.image || '/placeholder.jpg',
+    image: initialData?.image || '',
     isFeatured: initialData?.isFeatured || false,
     status: initialData?.status || 'published',
   });
@@ -35,7 +36,6 @@ export function ArticleForm({ mode, initialData, slug }: { mode: 'new' | 'edit';
     const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     setForm(prev => ({ ...prev, [name]: val }));
 
-    // Auto-set categoryName when category changes
     if (name === 'category') {
       const cat = categories.find(c => c.slug === value);
       if (cat) setForm(prev => ({ ...prev, category: value, categoryName: cat.name }));
@@ -120,7 +120,14 @@ export function ArticleForm({ mode, initialData, slug }: { mode: 'new' | 'edit';
         </div>
 
         <Field label="Author" name="author" value={form.author} onChange={handleChange} required />
-        <Field label="Image URL" name="image" value={form.image} onChange={handleChange} placeholder="/images/photo.jpg" />
+
+        {/* Cloudinary image upload */}
+        <ImageUpload
+          label="Featured Image"
+          value={form.image}
+          onChange={(url) => setForm(prev => ({ ...prev, image: url }))}
+          required
+        />
 
         <div className="flex items-center gap-2">
           <input
